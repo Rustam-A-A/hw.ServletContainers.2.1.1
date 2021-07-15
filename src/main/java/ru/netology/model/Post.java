@@ -27,4 +27,7 @@ public class Post {
   public void setContent(String content) {
     this.content = content;
   }
+
+  public Post withNewId(Long id) {return new Post(id, this.content); }
+
 }
