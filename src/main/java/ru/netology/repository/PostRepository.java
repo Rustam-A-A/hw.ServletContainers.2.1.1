@@ -4,14 +4,15 @@ import ru.netology.model.Post;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PostRepository {
-  private final Map<Long, Post>posts = new HashMap<>();
-  private Long id = 0L;
+  private final Map<Long, Post>posts = new ConcurrentHashMap<>();
+  private static final AtomicInteger id = new AtomicInteger(0);
 
   public List<Post> all() {
-    return new ArrayList<>(posts.values());
+    //return new ArrayList<>(posts.values());
+    return Collections.singletonList(new Post(12, "Servus!"));
   }
 
   public Optional<Post> getById(long id) {
@@ -19,10 +20,15 @@ public class PostRepository {
   }
 
   public synchronized Post save(Post post) {
-    Long newId = id++;
-    Post updatedPost = post.withNewId(newId);
-    posts.put(newId, updatedPost);
-    return updatedPost;
+    if (post.getId() == 0){
+      Long newId = (long)id.getAndIncrement();
+      Post updatedPost = post.withNewId(newId);
+      posts.put(newId, updatedPost);
+    }
+    if (post.getId() != 0){
+      posts.put(post.getId(), post);
+    }
+    return post;
   }
 
   public synchronized void removeById(long id) {
