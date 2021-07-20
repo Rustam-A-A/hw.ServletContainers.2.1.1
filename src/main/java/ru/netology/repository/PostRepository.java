@@ -19,19 +19,18 @@ public class PostRepository {
     return Optional.ofNullable(posts.get(id));
   }
 
-  public synchronized Post save(Post post) {
+  public Post save(Post post) {
     if (post.getId() == 0){
       Long newId = (long)id.getAndIncrement();
       Post updatedPost = post.withNewId(newId);
       posts.put(newId, updatedPost);
-    }
-    if (post.getId() != 0){
+    } else {
       posts.put(post.getId(), post);
     }
     return post;
   }
 
-  public synchronized void removeById(long id) {
+  public void removeById(long id) {
     posts.remove(id,posts.get(id));
   }
 }
